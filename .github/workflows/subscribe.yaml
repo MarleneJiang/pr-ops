@@ -20,9 +20,9 @@ jobs:
       - name: Get changed files
         id: changed-files
         uses: tj-actions/changed-files@v37
-        with:
-          files: '**.md'
-          json: "true"
+        # with:
+          # files: '**.md'
+          # json: "true"
       - name: List all changed files
         run: |
           for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
@@ -40,5 +40,5 @@ jobs:
         uses: dkershner6/post-api-call-action@v1
         with:
           url: "https://np4l5e.laf.run/pr"
-          data: "{\"command\": \"publish\"}"
+          data: "{\"message\":{\"command\": \"publish\", \"pr\": \"${{ github.event.pull_request.number }}\", \"labels\": \"${{ steps.pr-labels.outputs.labels-object }}\"}}"
           # params: "{\"content\": \"Test Content\"}"
