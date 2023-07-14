@@ -10,7 +10,7 @@ on:
       - '**.md'
 jobs:
   subscribe:
-    if: ${{ github.event.pull_request.merged == true && (github.event.label.name == 'web' || github.event.label.name == 'ai' || github.event.label.name == 'security' || github.event.label.name == 'cs') }}
+    if: github.event.pull_request.merged == true #&& (github.event.label.name == 'web' || github.event.label.name == 'ai' || github.event.label.name == 'security' || github.event.label.name == 'cs') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
