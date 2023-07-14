@@ -17,17 +17,16 @@ jobs:
         with:
           fetch-depth: 0  # OR "2" -> To retrieve the preceding commit.
 
-      - name: Get changed files
+      - name: Changed Files Exporter
         id: changed-files
-        uses: tj-actions/changed-files@v37
-        # with:
-          # files: '**.md'
-          # json: "true"
+        uses: umani/changed-files@v4.0.0
+        with:
+          repo-token: ${{ github.token }}
+          pattern: '^.*\.(md|markdown)$'
       - name: List all changed files
         run: |
-          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
-            echo "$file was changed"
-          done
+          echo ${{ steps.changed-files.outputs.files_created }};
+          
       - name: Get PR labels
         id: pr-labels
         uses: joerick/pr-labels-action@v1.0.8
@@ -40,5 +39,5 @@ jobs:
         uses: dkershner6/post-api-call-action@v1
         with:
           url: "https://np4l5e.laf.run/pr"
-          data: "{\"message\":{\"command\": \"publish\", \"pr\": \"${{ github.event.pull_request.number }}\", \"labels\": \"${{ steps.pr-labels.outputs.labels-object }}\"}}"
+          data: "{\"message\":{\"command\": \"publish\", \"pr\": \"${{ github.event.pull_request.number }}\", \"labels\": \"${{ steps.pr-labels.outputs.labels }}\"}}"
           # params: "{\"content\": \"Test Content\"}"
