@@ -13,61 +13,32 @@ jobs:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v2
-
-      - name: Get PR info
-        run: echo "PR_NUMBER=$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')" >> $GITHUB_ENV
-
-      - name: Fetch changes
-        run: |
-          git fetch origin ${{ github.event.pull_request.base.ref }}
-          git fetch origin ${{ github.event.pull_request.head.ref }}
-
-      - name: Get changed .md files
-        run: echo "FILES=$(git diff --name-only ${{ github.event.pull_request.base.ref }}...${{ github.event.pull_request.head.ref }} | grep '\.md$')" >> $GITHUB_OUTPUT
-
-      - name: Get changes
-        run: |
-          CHANGES=""
-          for FILE in $(cat $GITHUB_OUTPUT | awk -F= '/FILES/ {print $2}')
-          do
-            CHANGES+=$(git diff ${{ github.event.pull_request.base.ref }}...${{ github.event.pull_request.head.ref }} -- $FILE)
-          done
-          echo "CHANGES=$CHANGES" >> $GITHUB_OUTPUT
-
-      - name: Check PR labels and Send updates
-        uses: octokit/request-action@v2.x
+      - uses: actions/checkout@v3
         with:
-          route: GET /repos/{owner}/{repo}/pulls/{pull_number}
-          owner: ${{ github.repository_owner }}
-          repo: ${{ github.repository }}
-          pull_number: $(cat $GITHUB_ENV | awk -F= '/PR_NUMBER/ {print $2}')
-          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0  # OR "2" -> To retrieve the preceding commit.
 
-      - name: Send POST request
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v37
+        with:
+          files: '**.md'
+          json: "true"
+      - name: List all changed files
         run: |
-          LABELS=$(echo '${{ steps.pr_data.outputs.data }}' | jq -r '.labels[].name')
-          for LABEL in $LABELS
-          do
-            case $LABEL in
-            "web")
-              API_ENDPOINT="https://np4l5e.laf.run/pr"
-              ;;
-            "安全")
-              API_ENDPOINT="https://np4l5e.laf.run/pr"
-              ;;
-            "科协")
-              API_ENDPOINT="https://np4l5e.laf.run/pr"
-              ;;
-            "AI")
-              API_ENDPOINT="https://np4l5e.laf.run/pr"
-              ;;
-            esac
-
-            if [ ! -z "$API_ENDPOINT" ]; then
-              curl -X POST $API_ENDPOINT \
-              -H "Content-Type: application/json" \
-              -d '{ "message": "New update in PR #'$(cat $GITHUB_ENV | awk -F= '/PR_NUMBER/ {print $2}')' with changes: '$(cat $GITHUB_OUTPUT | awk -F= '/CHANGES/ {print $2}')'" }'
-            fi
+          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+            echo "$file was changed"
           done
+      - name: Get PR labels
+        id: pr-labels
+        uses: joerick/pr-labels-action@v1.0.8
+      
+      - name: echo labels
+        run: |
+          echo "${{ steps.pr-labels.outputs.labels-object }}"
+
+      - name: Post
+        uses: dkershner6/post-api-call-action@v1
+        with:
+          url: "https://np4l5e.laf.run/pr"
+          data: "{\"command\": \"publish\"}"
+          # params: "{\"content\": \"Test Content\"}"
