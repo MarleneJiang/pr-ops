@@ -10,7 +10,7 @@ on:
       - '**.md'
 jobs:
   subscribe:
-    if: github.event.pull_request.merged == true #&& (github.event.label.name == 'web' || github.event.label.name == 'ai' || github.event.label.name == 'security' || github.event.label.name == 'cs') }}
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -39,7 +39,8 @@ jobs:
 
       - name: Post
         uses: dkershner6/post-api-call-action@v1
+        if: steps.changed-files.outputs.files_updated != '' && steps.changed-files.outputs.files_created != '' && steps.changed-files.outputs.files_deleted != '' && steps.pr-labels.outputs.labels-object != '{}' && (steps.pr-labels.outputs.labels-object.ai == true || steps.pr-labels.outputs.labels-object.web == true) && github.event.pull_request.body != ''
         with:
           url: "https://np4l5e.laf.run/pr"
-          data: "{\"id\": \"${{ github.event.pull_request.number }}\", \"labels\": \"${{ steps.pr-labels.outputs.labels }}\", \"files_updated\": \"${{ steps.changed-files.outputs.files_updated }}\", \"files_created\": \"${{ steps.changed-files.outputs.files_created }}\", \"files_deleted\": \"${{ steps.changed-files.outputs.files_deleted }}\",\"comment\":\"${{github.event.comment.body}}\"}"
+          data: "{\"id\": \"${{ github.event.pull_request.number }}\", \"labels\": \"${{ steps.pr-labels.outputs.labels }}\", \"files_updated\": \"${{ steps.changed-files.outputs.files_updated }}\", \"files_created\": \"${{ steps.changed-files.outputs.files_created }}\", \"files_deleted\": \"${{ steps.changed-files.outputs.files_deleted }}\",\"body\":\"${{github.event.pull_request.body}}\",\"title\":\"${{github.event.pull_request.title}}\",\"url\":\"${{github.event.pull_request.html_url}}\"}"
           # params: "{\"content\": \"Test Content\"}"
