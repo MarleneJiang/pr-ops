@@ -10,7 +10,7 @@ on:
       - '**.md'
 jobs:
   subscribe:
-    if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true && (github.event.label.name == 'web' || github.event.label.name == 'ai' || github.event.label.name == 'security' || github.event.label.name == 'cs')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -41,5 +41,5 @@ jobs:
         uses: dkershner6/post-api-call-action@v1
         with:
           url: "https://np4l5e.laf.run/pr"
-          data: "{\"message\":{\"command\": \"publish\", \"pr\": \"${{ github.event.pull_request.number }}\", \"labels\": \"${{ steps.pr-labels.outputs.labels }}\"}}"
+          data: "{\"id\": \"${{ github.event.pull_request.number }}\", \"labels\": \"${{ steps.pr-labels.outputs.labels }}\", \"files_updated\": \"${{ steps.changed-files.outputs.files_updated }}\", \"files_created\": \"${{ steps.changed-files.outputs.files_created }}\", \"files_deleted\": \"${{ steps.changed-files.outputs.files_deleted }}\"}"
           # params: "{\"content\": \"Test Content\"}"
