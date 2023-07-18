@@ -1,2 +1,4 @@
+# 1
+
 whate are you nong sha lei?
-不懂啊！ssssss
+不懂啊！ssss
