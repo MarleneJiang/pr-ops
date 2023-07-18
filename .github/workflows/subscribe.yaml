@@ -28,14 +28,6 @@ jobs:
         id: pr-labels
         uses: joerick/pr-labels-action@v1.0.8
 
-      - name: Set the value in bash
-        id: step_one
-        run: |
-          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
-          echo "github.event.pull_request.body<<$EOF" >> "$GITHUB_ENV"
-          echo "$EOF" >> "$GITHUB_ENV"
-          echo ${{ env }}
-
       - name: Post Data
         id: post-data
         env:
@@ -44,7 +36,8 @@ jobs:
           FILES_UPDATED: ${{ steps.changed-files.outputs.files_updated }}
           FILES_CREATED: ${{ steps.changed-files.outputs.files_created }}
           FILES_DELETED: ${{ steps.changed-files.outputs.files_deleted }}
-          BODY: ${{ github.event.pull_request.body }}
+          BODY: |
+            ${{ github.event.pull_request.body }}
           TITLE: ${{ github.event.pull_request.title }}
           URL: ${{ github.event.pull_request.html_url }}
         run: node .github/actions-scripts/post.js
@@ -52,3 +45,8 @@ jobs:
       - name: Console Log
         id: console-log
         run: echo ${{ steps.post-data.outputs.post_result }}
+      # - name: Post
+      #   uses: dkershner6/post-api-call-action@v1
+      #   with:
+      #     url: "https://np4l5e.laf.run/pr"
+      #     data: "{\"id\": \"${{ github.event.pull_request.number }}\", \"labels\": \"${{ steps.pr-labels.outputs.labels }}\", \"files_updated\": \"${{ steps.changed-files.outputs.files_updated }}\", \"files_created\": \"${{ steps.changed-files.outputs.files_created }}\", \"files_deleted\": \"${{ steps.changed-files.outputs.files_deleted }}\",\"body\":\"${{github.event.pull_request.body}}\",\"title\":\"${{github.event.pull_request.title}}\",\"url\":\"${{github.event.pull_request.html_url}}\"}"
