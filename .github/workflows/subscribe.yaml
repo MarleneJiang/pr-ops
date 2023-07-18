@@ -33,8 +33,8 @@ jobs:
         run: |
           EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
           echo "github.event.pull_request.body<<$EOF" >> "$GITHUB_ENV"
-          curl https://www.baidu.com >> "$GITHUB_ENV"
           echo "$EOF" >> "$GITHUB_ENV"
+          echo ${{ env }}
 
       - name: Post Data
         id: post-data
