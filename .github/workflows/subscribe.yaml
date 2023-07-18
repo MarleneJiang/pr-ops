@@ -28,6 +28,14 @@ jobs:
         id: pr-labels
         uses: joerick/pr-labels-action@v1.0.8
 
+      - name: Set the value in bash
+        id: step_one
+        run: |
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+          echo "github.event.pull_request.body<<$EOF" >> "$GITHUB_ENV"
+          curl https://www.baidu.com >> "$GITHUB_ENV"
+          echo "$EOF" >> "$GITHUB_ENV"
+
       - name: Post Data
         id: post-data
         env:
