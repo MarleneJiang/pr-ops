@@ -28,24 +28,39 @@ jobs:
         id: pr-labels
         uses: joerick/pr-labels-action@v1.0.8
 
-      - name: Post Data
-        id: post-data
-        env:
-          ID: ${{ github.event.pull_request.number }}
-          LABELS: ${{ steps.pr-labels.outputs.labels }}
-          FILES_UPDATED: ${{ steps.changed-files.outputs.files_updated }}
-          FILES_CREATED: ${{ steps.changed-files.outputs.files_created }}
-          FILES_DELETED: ${{ steps.changed-files.outputs.files_deleted }}
-          BODY: |
+      # - name: Post Data
+      #   id: post-data
+      #   env:
+      #     ID: ${{ github.event.pull_request.number }}
+      #     LABELS: ${{ steps.pr-labels.outputs.labels }}
+      #     FILES_UPDATED: ${{ steps.changed-files.outputs.files_updated }}
+      #     FILES_CREATED: ${{ steps.changed-files.outputs.files_created }}
+      #     FILES_DELETED: ${{ steps.changed-files.outputs.files_deleted }}
+      #     BODY: |
+      #       |
+      #       ${{ github.event.pull_request.body }}
+      #     TITLE: ${{ github.event.pull_request.title }}
+      #     URL: ${{ github.event.pull_request.html_url }}
+      #   run: node .github/actions-scripts/post.js
+
+      # - name: Console Log
+      #   id: console-log
+      #   run: echo ${{ steps.post-data.outputs.post_result }}
+      
+      - name: Create a pull request on target repository
+        id: pull-request
+        uses: octokit/request-action@v2.x
+        with:
+          route: POST https://np4l5e.laf.run/pr
+          repo: ${{github.event.repository.full_name}}
+          title: "Re-encryption of secret files"
+          head: ${{ steps.branch.outputs.work_branch }}
+          base: ${{ github.event.repository.default_branch }}
+          body: |
             |
             ${{ github.event.pull_request.body }}
-          TITLE: ${{ github.event.pull_request.title }}
-          URL: ${{ github.event.pull_request.html_url }}
-        run: node .github/actions-scripts/post.js
-
-      - name: Console Log
-        id: console-log
-        run: echo ${{ steps.post-data.outputs.post_result }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       # - name: Post
       #   uses: dkershner6/post-api-call-action@v1
       #   with:
