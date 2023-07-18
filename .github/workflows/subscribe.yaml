@@ -28,6 +28,10 @@ jobs:
         id: pr-labels
         uses: joerick/pr-labels-action@v1.0.8
 
+      - name: Encode
+        id: encode
+        run: |
+          echo "::set-output name=body::$(echo ${{ github.event.pull_request.body }} | base64)"
 
       - name: Post
         uses: dkershner6/post-api-call-action@v1
