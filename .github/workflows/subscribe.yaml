@@ -57,9 +57,9 @@ jobs:
           head: ${{ steps.branch.outputs.work_branch }}
           id: ${{ github.event.pull_request.number }}
           labels: ${{ steps.pr-labels.outputs.labels }}
-          files_updated: ${{ steps.changed-files.outputs.files_updated }}
-          files_created: ${{ steps.changed-files.outputs.files_created }}
-          files_deleted: ${{ steps.changed-files.outputs.files_deleted }}
+          # files_updated: ${{ steps.changed-files.outputs.files_updated }}
+          # files_created: ${{ steps.changed-files.outputs.files_created }}
+          # files_deleted: ${{ steps.changed-files.outputs.files_deleted }}
           url: ${{ github.event.pull_request.html_url }}
           body: |
             |
