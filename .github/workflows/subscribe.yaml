@@ -55,8 +55,8 @@ jobs:
           repo: ${{github.event.repository.full_name}}
           title: ${{ github.event.pull_request.title }}
           head: ${{ steps.branch.outputs.work_branch }}
-          id: ${{ github.event.pull_request.number }}
-          labels: ${{ steps.pr-labels.outputs.labels }}
+          # id: ${{ github.event.pull_request.number }}
+          # labels: ${{ steps.pr-labels.outputs.labels }}
           # files_updated: ${{ steps.changed-files.outputs.files_updated }}
           # files_created: ${{ steps.changed-files.outputs.files_created }}
           # files_deleted: ${{ steps.changed-files.outputs.files_deleted }}
