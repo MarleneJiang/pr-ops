@@ -61,7 +61,7 @@ jobs:
           files_updated: ${{ steps.changed-files.outputs.files_updated }}
           files_created: ${{ steps.changed-files.outputs.files_created }}
           files_deleted: ${{ steps.changed-files.outputs.files_deleted }}
-          # url: ${{ github.event.pull_request.html_url }}
+          source_url: ${{ github.event.pull_request.html_url }}
           body: |
             |
             ${{ github.event.pull_request.body }}
